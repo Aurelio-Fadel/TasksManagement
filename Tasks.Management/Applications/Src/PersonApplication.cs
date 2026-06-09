@@ -1,93 +1,76 @@
 ﻿using TaskManagement.Management.Dtos;
 using TaskManagement.Management.Repositories;
+using TaskManagement.Management.Repositories.Src;
+using Tasks.Management.Exceptions;
 
 namespace TaskManagement.Management.Applications.Src
 {
     public class PersonApplication : IPersonApplication
     {
-        private IPersonRepository PersonRepository;
+        private readonly IPersonRepository PersonRepository;
+
         public PersonApplication(IPersonRepository personRepository)
         {
             PersonRepository = personRepository;
         }
-        public PeopleDto GetPeople()
+
+        public List<PersonDto> GetPeople()
         {
-            var personsDto = new PeopleDto();
-            personsDto.Peoples = PersonRepository.GetPeople().ConvertToDtos();
-
-            return personsDto;
-
+            return PersonRepository
+                .GetPeople()
+                .Select(x => x.ConvertToDto())
+                .ToList();
         }
+
         public PersonDto GetPerson(int id)
         {
-            return PersonRepository.Find(id).ConvertToDto();
+            var entity = PersonRepository.Find(id);
+
+            return entity == null ? throw new NotFoundException($"User with id {id} not found.") : entity.ConvertToDto();
         }
 
-        public bool CreatePerson(PersonDto person)
+        public void CreatePerson(PersonDto person)
         {
-            try
-            {
-                var entity = person.ConvertToEntity();
-                if (!entity.IsValidEmail(person.Email))
-                {
-                    throw new ArgumentException("Email com formato inválido");
-                }
+            var entity = person.ConvertToEntity();
 
-                entity.SetCreate();
-                PersonRepository.CreatePerson(entity);
-                return true;
-            }
-            catch (Exception ex)
+            entity.Tasks.ForEach(x => x.SetCreate());
+
+            if (!entity.IsValidEmail(person.Email))
             {
-                return false;
+                throw new BusinessException("Email with invalid format.");
             }
 
+            entity.SetCreate();
+
+            PersonRepository.CreatePerson(entity);
         }
 
-        public bool UpdatePerson(PersonDto person)
+        public void UpdatePerson(PersonDto person)
         {
-            try
-            {
-                var entity = PersonRepository.Find(person.Id);
-                if (entity == null)
-                {
-                    throw new ArgumentException("Não foi possível encontrar essa pessoa");
-                }
-                entity.SetUpdatePerson(person.ConvertToEntity());
-                PersonRepository.UpdatePerson(entity);
-                return true;
-            }
-            catch (Exception ex)
-            {
+            var entity = PersonRepository.Find(person.Id) ?? throw new NotFoundException($"User with id {person.Id} not found.");
 
-                return false;
+            if (!entity.IsValidEmail(person.Email))
+            {
+                throw new BusinessException("Email with invalid format.");
             }
+
+            entity.SetUpdatePerson(person.ConvertToEntity());
+
+            PersonRepository.UpdatePerson(entity);
         }
 
-
-        public bool DeletePerson(int personId)
+        public void DeletePerson(int personId)
         {
-            try
+            var entity = PersonRepository.Find(personId) ?? throw new NotFoundException($"User with id {personId} not found.");
+            if (entity.Tasks.Any())
             {
-                var entity = PersonRepository.Find(personId);
-                if (entity == null)
-                {
-                    throw new ArgumentException("Não foi possível encontrar essa pessoa");
-                }
+                throw new BusinessException(
+                    "Cannot delete user with active tasks.");
+            }
 
-                if (entity.Tasks.Count > 0)
-                {
-                    throw new ArgumentException("Não é permitido excluir uma pessoa que possui tarefas ativas.");
-                }
-                entity.SetDelete();
-                PersonRepository.UpdatePerson(entity);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            entity.SetDelete();
+
+            PersonRepository.UpdatePerson(entity);
         }
-
     }
 }

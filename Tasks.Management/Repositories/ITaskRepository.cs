@@ -8,7 +8,7 @@ namespace TaskManagement.Management.Repositories
 {
     public interface ITaskRepository
     {
-        List<AssignedTask> GetTasks();
+        IEnumerable<AssignedTask> GetTasks();
         void CreateTask(AssignedTask task);
         AssignedTask UpdateTask(AssignedTask task);
         void DeleteTask(AssignedTask task);

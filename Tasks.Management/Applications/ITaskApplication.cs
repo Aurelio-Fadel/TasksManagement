@@ -9,9 +9,9 @@ namespace TaskManagement.Management.Applications
 {
     public interface ITaskApplication
     {
-        List<TaskDto> GetTasks();
-        bool CreateTask(TaskDto task);
-        bool UpdateTask(TaskDto task);
-        bool DeleteTask(int taskId);
+        IEnumerable<TaskDto> GetTasks();
+        void CreateTask(TaskDto task);
+        void UpdateTask(TaskDto task);
+        void DeleteTask(int taskId);
     }
 }

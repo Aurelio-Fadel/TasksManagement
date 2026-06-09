@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Management.Applications;
 using TaskManagement.Management.Dtos;
+using Tasks.Management.Exceptions;
 
 namespace TasksManagement.Controllers
 {
-    [Route("api/task")]
     [ApiController]
+    [Route("api/task")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskApplication TaskApplication;
@@ -15,13 +16,12 @@ namespace TasksManagement.Controllers
             TaskApplication = taskApplication;
         }
 
-        [HttpGet("getTasks")]
+        [HttpGet]
         public IActionResult GetTasks()
         {
             try
             {
-                var data = TaskApplication.GetTasks();
-                return Ok(data);
+                return Ok(TaskApplication.GetTasks());
             }
             catch (Exception ex)
             {
@@ -29,17 +29,21 @@ namespace TasksManagement.Controllers
             }
         }
 
-        [HttpPost("createTask")]
-        public IActionResult CreateTask(TaskDto task)
+        [HttpPost]
+        public IActionResult CreateTask([FromBody] TaskDto task)
         {
             try
             {
-                var data = TaskApplication.CreateTask(task);
-                if (data)
+                TaskApplication.CreateTask(task);
+
+                return Created(string.Empty, new
                 {
-                    return Ok("Tarefa criada com sucesso");
-                }
-                return BadRequest("Falha ao criar tarefa");
+                    Message = "Task created successfully."
+                });
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -47,15 +51,25 @@ namespace TasksManagement.Controllers
             }
         }
 
-        [HttpPut("updateTask")]
-        public IActionResult UpdateTask(TaskDto task)
+        [HttpPut]
+        public IActionResult UpdateTask([FromBody] TaskDto task)
         {
             try
             {
-                var data = TaskApplication.UpdateTask(task);
-                if (data)
-                    return Ok("Tarefa atualizada com sucesso");
-                return BadRequest("Falha na atualização da tarefa");
+                TaskApplication.UpdateTask(task);
+
+                return Ok(new
+                {
+                    Message = "Task updated successfully."
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -63,15 +77,25 @@ namespace TasksManagement.Controllers
             }
         }
 
-        [HttpDelete("deleteTask")]
+        [HttpDelete("{taskId}")]
         public IActionResult DeleteTask(int taskId)
         {
             try
             {
-                var data = TaskApplication.DeleteTask(taskId);
-                if (data)
-                    return Ok("Tarefa excluida com sucesso");
-                return BadRequest("Erro na exclusão da tarefa");
+                TaskApplication.DeleteTask(taskId);
+
+                return Ok(new
+                {
+                    Message = "Task deleted successfully."
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (BusinessException ex)
+            {
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {

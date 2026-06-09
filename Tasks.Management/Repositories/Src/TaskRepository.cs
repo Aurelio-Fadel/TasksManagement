@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore; // Corrigido para usar o namespace do EF Core
+using Microsoft.EntityFrameworkCore;
 using TaskManagement.Management.DataContext;
 using TaskManagement.Management.Entities;
 
@@ -30,10 +30,10 @@ namespace TaskManagement.Management.Repositories.Src
         public AssignedTask Find(int id)
         {
             return TaskContext.Tasks
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id) ?? throw new Exception($"Task with id: {id} not found");
         }
 
-        public List<AssignedTask> GetTasks()
+        public IEnumerable<AssignedTask> GetTasks()
         {
             return TaskContext.Tasks.ToList();
         }

@@ -9,10 +9,10 @@ namespace TaskManagement.Management.Applications
 {
     public interface IPersonApplication
     {
-        PeopleDto GetPeople();
-        PersonDto GetPerson(int personId);
-        bool CreatePerson(PersonDto person);
-        bool UpdatePerson(PersonDto person);
-        bool DeletePerson(int personId);
+        List<PersonDto> GetPeople();
+        PersonDto GetPerson(int id);
+        void CreatePerson(PersonDto person);
+        void UpdatePerson(PersonDto person);
+        void DeletePerson(int personId);
     }
 }

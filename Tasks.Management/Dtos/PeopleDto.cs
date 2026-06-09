@@ -8,7 +8,7 @@ namespace TaskManagement.Management.Dtos
 {
     public class PeopleDto
     {
-        public List<PersonDto> Peoples { get; set; }
+        public IEnumerable<PersonDto>? Peoples { get; set; }
 
     }
 }

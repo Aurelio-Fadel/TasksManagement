@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Tasks.Management.Migrations
 {
     /// <inheritdoc />
-    public partial class NomeDaMigracao : Migration
+    public partial class Mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,7 +28,7 @@ namespace Tasks.Management.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Birth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDisponible = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },

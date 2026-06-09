@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Management.DataContext;
 using TaskManagement.Management.Entities;
@@ -32,15 +33,15 @@ namespace TaskManagement.Management.Repositories.Src
         {
             return TaskContext.Persons
                 .Include(x => x.Tasks)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id) ?? throw new Exception($"User with id: {id} not found"); ;
         }
 
-        public List<Person> GetPeople()
+        public IEnumerable<Person> GetPeople()
         {
             return TaskContext.Persons
+                .AsNoTracking()
                 .Include(x => x.Tasks)
-                .Where(x => x.IsActive)
-                .ToList();
+                .Where(x => x.IsActive);
         }
 
         public Person UpdatePerson(Person person)

@@ -12,8 +12,8 @@ using TaskManagement.Management.DataContext;
 namespace Tasks.Management.Migrations
 {
     [DbContext(typeof(TaskManagementContext))]
-    [Migration("20241030210027_NomeDaMigracao")]
-    partial class NomeDaMigracao
+    [Migration("20260609190958_Mig1")]
+    partial class Mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,7 +72,7 @@ namespace Tasks.Management.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Deleted")
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")

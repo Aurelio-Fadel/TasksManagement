@@ -15,7 +15,7 @@ namespace TaskManagement.Management.Dtos
         public string Description { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
-        public PersonDto? Person { get; set; }
+       // public PersonDto? Person { get; set; }
 
         public int PersonId { get; set; }
     }

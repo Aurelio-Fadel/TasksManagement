@@ -9,7 +9,7 @@ namespace TaskManagement.Management.Repositories
 {
     public interface IPersonRepository
     {
-        List<Person> GetPeople();
+        IEnumerable<Person> GetPeople();
         void CreatePerson(Person person);
         Person UpdatePerson(Person person);
         Person DeletePerson(Person person);

@@ -18,6 +18,7 @@ namespace TaskManagement.Management.Dtos
         {
             var config = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<AssignedTask, TaskDto>();
                 cfg.CreateMap<Person, PersonDto>();
             });
             var mapper = config.CreateMapper();
@@ -43,6 +44,7 @@ namespace TaskManagement.Management.Dtos
         {
             var config = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<TaskDto, AssignedTask>();
                 cfg.CreateMap<PersonDto, Person>();
             });
             var mapper = config.CreateMapper();

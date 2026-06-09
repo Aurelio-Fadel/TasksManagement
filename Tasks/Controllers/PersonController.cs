@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Management.Applications;
+using TaskManagement.Management.Applications.Src;
 using TaskManagement.Management.Dtos;
+using Tasks.Management.Exceptions;
 
 namespace TasksManagement.Controllers
 {
@@ -15,12 +17,13 @@ namespace TasksManagement.Controllers
             PersonApplication = personApplication;
         }
 
-        [HttpGet("getPeople")]
+        [HttpGet]
         public IActionResult GetPeople()
         {
             try
             {
                 var data = PersonApplication.GetPeople();
+
                 return Ok(data);
             }
             catch (Exception ex)
@@ -29,17 +32,53 @@ namespace TasksManagement.Controllers
             }
         }
 
-        [HttpPost("createPeople")]
-        public IActionResult CreatePeople(PersonDto person)
+        [HttpPost]
+        public IActionResult CreatePerson(
+            [FromBody] PersonDto person
+        )
         {
             try
             {
-                var data = PersonApplication.CreatePerson(person);
-                if (data)
+                PersonApplication.CreatePerson(person);
+
+                return Created(
+                    string.Empty,
+                    new
+                    {
+                        Message = "Person created successfully."
+                    });
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult UpdatePerson(
+            [FromBody] PersonDto person
+        )
+        {
+            try
+            {
+                PersonApplication.UpdatePerson(person);
+
+                return Ok(new
                 {
-                    return Ok("Pessoa criada com sucesso");
-                }
-                return BadRequest("Falha ao criar pessoa");
+                    Message = "Person updated successfully."
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -47,31 +86,25 @@ namespace TasksManagement.Controllers
             }
         }
 
-        [HttpPut("updatePeople")]
-        public IActionResult UpdatePeople(PersonDto person)
+        [HttpDelete("{personId}")]
+        public IActionResult DeletePerson(int personId)
         {
             try
             {
-                var data = PersonApplication.UpdatePerson(person);
-                if (data)
-                    return Ok("Informações atualizadas com sucesso");
-                return BadRequest("Falha na atualização das informações");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+                PersonApplication.DeletePerson(personId);
 
-        [HttpDelete("deletePeople")]
-        public IActionResult UpdatePeople(int personId)
-        {
-            try
+                return Ok(new
+                {
+                    Message = "Person deleted successfully."
+                });
+            }
+            catch (NotFoundException ex)
             {
-                var data = PersonApplication.DeletePerson(personId);
-                if (data)
-                    return Ok("Pessoa excluida com sucesso");
-                return BadRequest("Erro na exclusão da pessoa");
+                return NotFound(ex.Message);
+            }
+            catch (BusinessException ex)
+            {
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {
